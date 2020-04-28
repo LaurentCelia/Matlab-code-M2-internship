@@ -1,0 +1,55 @@
+function [amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,elec1,elec2,elec3,elec4] = waveform(TTMtx,tt_cell)
+
+%% Wave form
+%separate each electrode of the tetrode
+elec1 = TTMtx(tt_cell,4:4:131);
+moyelec1 = mean(elec1);    % Mean wave form of the first electrode 
+amplitude1 = max(moyelec1) - min(moyelec1); % Amplitude of the first electrode
+std1 = std(elec1);  % Standard deviation of the first electrode
+
+elec2 = TTMtx(tt_cell,5:4:131);
+moyelec2 = mean(elec2);
+amplitude2 = max(moyelec2) - min(moyelec2);
+std2 = std(elec2);
+
+elec3 = TTMtx(tt_cell,6:4:131);
+moyelec3 = mean(elec3);
+amplitude3 = max(moyelec3) - min(moyelec3);
+std3 = std(elec3);
+
+elec4 = TTMtx(tt_cell,7:4:131);
+moyelec4 = mean(elec4);
+amplitude4 = max(moyelec4) - min(moyelec4);
+std4 = std(elec4);
+
+amplmax = [amplitude1; amplitude2; amplitude3; amplitude4];
+[value,~] = max(amplmax);   % Find the amplitude max of the 4 electrode
+
+max_elec = [max(moyelec1); max(moyelec2); max(moyelec3); max(moyelec4)];
+[scalemax,~] = max(max_elec); % Find the potential max
+min_elec = [min(moyelec1); min(moyelec2); min(moyelec3); min(moyelec4)];
+[scalemin,~] = min(min_elec);   % Find the potential min
+
+% Find which electrode have the highest potential to set the scale in the wave form figure
+if max(moyelec1) == scalemax
+    stdmax = max(moyelec1 + std1);
+elseif max(moyelec2) == scalemax
+    stdmax = max(moyelec2 + std2);
+elseif max(moyelec3) == scalemax
+    stdmax = max(moyelec3 + std3);
+elseif max(moyelec4) == scalemax
+    stdmax = max(moyelec4 + std4);
+end
+
+% Find which electrode have the lowest potential to set the scale of the wave form figure
+if min(moyelec1) == scalemin
+    stdmin = min(moyelec1 - std1);
+elseif min(moyelec2) == scalemin
+    stdmin = min(moyelec2 - std2);
+elseif min(moyelec3) == scalemin
+    stdmin = min(moyelec3 - std3);
+elseif min(moyelec4) == scalemin
+    stdmin = min(moyelec4 - std4);
+end
+
+end
