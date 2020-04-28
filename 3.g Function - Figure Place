@@ -1,0 +1,79 @@
+function figure_place(PosMtx,pos_spike,ratomap_smooth,direction_analysis,smooth_dirrate,smooth_time,amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,ts1,ts2,window)
+
+figure;
+%% Subplot of Path X Spike
+subplot(2,2,1); 
+plot(PosMtx(:,2),PosMtx(:,3),'Color',[0.5 0.5 0.5]);
+hold on;
+scatter(PosMtx(pos_spike,2),PosMtx(pos_spike,3),5,'Markeredgecolor','r','markerfacecolor','r');
+title('Path X Spike','fontsize',15);
+xlim([50 190]); ylim([25 190]);
+goalzone_path = viscircles([154.5 74], 18.25,'color','[0.5 0.5 0.5]','LineStyle','--','LineWidth',1);   %create the goal zone
+axis square;
+axis off;
+
+%% Subplot of rate map
+subplot(2,2,2) 
+figure_ratemap = pcolor(ratomap_smooth);
+colormap(gca,jet);
+axis square; axis off;
+set(figure_ratemap, 'EdgeColor', 'none');
+title({'Rate map'},'fontsize',15)
+colorrate = colorbar('FontSize',12);
+colorrate.Label.String = 'Rate (Hz)';
+goalzone_ratemap = viscircles([22 11], 4,'color','[0.5 0.5 0.5]','LineStyle','--','LineWidth',1); %create the goal zone
+
+%% Wave Form
+if amplitude1 == value
+    subplot(2,2,4)
+    waveform1 = plot(moyelec1,'color','r','LineWidth',3);
+    hold on
+    std1_sup = plot(moyelec1 - std1,'color','black');
+    hold on
+    std1_inf = plot(moyelec1 + std1,'color','black');
+    title('Electrode 1','fontsize',15);
+    ylim([stdmin stdmax]);
+    box off; set(gca,'XTick',[]); set(gca,'YTick',[]); set(gca, 'Color', 'None'); axis square;
+elseif amplitude2 == value
+    subplot(2,2,4)
+    waveform2 = plot(moyelec2,'color','r','LineWidth',3);
+    hold on
+    std2_sup = plot(moyelec2 - std2,'color','black');
+    hold on
+    std2_inf = plot(moyelec2 + std2,'color','black');
+    title('Electrode 2','fontsize',15);
+    ylim([stdmin stdmax]);
+    box off; set(gca,'XTick',[]); set(gca,'YTick',[]);set(gca, 'Color', 'None'); axis square;
+elseif amplitude3 == value
+    subplot(2,2,4)
+    waveform3 = plot(moyelec3,'color','r','LineWidth',3);
+    hold on
+    std3_sup = plot(moyelec3 - std3,'color','black');
+    hold on
+    std3_inf = plot(moyelec3 + std3,'color','black');
+    title('Electrode 3','fontsize',15);
+    ylim([stdmin stdmax]);
+    box off; set(gca,'XTick',[]); set(gca,'YTick',[]);set(gca, 'Color', 'None');axis square;
+elseif amplitude4 == value
+    subplot(2,2,4)
+    waveform4 = plot(moyelec4,'color','r','LineWidth',3);
+    hold on
+    std4_sup = plot(moyelec4 - std4,'color','black');
+    hold on
+    std4_inf = plot(moyelec4 + std4,'color','black');
+    title('Electrode 4','fontsize',15);
+    ylim([stdmin stdmax]);
+    box off; set(gca,'XTick',[]); set(gca,'YTick',[]);set(gca, 'Color', 'None');axis square;
+end
+
+subplot(2,2,3)
+offsets  = crosscorrelogram(ts1, ts2, window);
+[counts,centers] =hist(offsets, 100); 
+counts(50)=0; 
+bar(centers,counts); 
+title('Autocorrelogram','fontsize',15)
+ylabel({'Spikes'},'fontsize',15,'Color','k');
+xlabel({'Time (s)'},'fontsize',15,'Color','k');
+axis square; xlim([-1 1]); set(gca, 'Color', 'None'); box off;
+
+end
