@@ -1,0 +1,22 @@
+function [pos_spike,mat_spike,ratemap] = spikemap(PosMtx,angleMtx2,binsXaxis,binsYaxis,mat_time)
+
+%% spike map (without NaN instead of 0)
+pos_spike = find(angleMtx2(:,3)>=1);
+position_x = PosMtx(pos_spike,2);
+position_y = PosMtx(pos_spike,3);
+%position_x2 = PosMtx(pos_spike,4);
+%position_y2 = PosMtx(pos_spike,5);
+
+%create spike matrix : spikes in each position bin
+mat_spike = zeros(length(binsYaxis),length(binsXaxis));
+
+for i = 1:length(binsXaxis)-1
+   for ii = 1:length(binsYaxis)-1
+       a = find(position_x>binsXaxis(i) & position_x<binsXaxis(i+1) & position_y>binsYaxis(ii) & position_y<binsYaxis(ii+1));
+       nbspike = length(a);
+       mat_spike(ii,i) = nbspike;
+   end
+end
+ratemap = mat_spike./mat_time;  % Spikes rate
+
+end
