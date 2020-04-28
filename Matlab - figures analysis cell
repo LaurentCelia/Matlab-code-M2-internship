@@ -2,9 +2,9 @@
 %% open file
 inputfile = 'Zmoth_05032020_S1-01.uff'; % define the recording file (.uff).
 
-binsize = 5;
-
 [EEGvalues, EEGts, TTMtx, PosMtx, E_FlagMtx, eeg_chan_to_read,inputfile] = Read_UFF_Slow(inputfile, 1, 1, 0, 0, 0); % Open the recording file
+
+binsize = 5;
 
 PosMtx = PosMtx(1:2:end,:);
 %% select tetrode and cell number & cell type
@@ -45,14 +45,13 @@ for i = 1:length(binsXaxis)-1
 end
 
 %% spike map (without NaN instead of 0)
-[pos_spike,mat_spikes,mat_spike,ratemap] = spikemap(PosMtx,angleMtx2,binsXaxis,binsYaxis,mat_time);
+[pos_spike,mat_spike,ratemap] = spikemap(PosMtx,angleMtx2,binsXaxis,binsYaxis,mat_time);
 
 %% speed analysis
 [rate,binspeed] = speed(PosMtx,pos_spike,posx,posy);
 
 %% Smooth map
 timemap_smooth = smooth2a(mat_time,2);  %time map smoothing
-spikemap_smooth = smooth2a(mat_spikes,2);   %spike map smoothing
 ratemap_smooth = smooth2a(ratemap,2);   %rate map smoothing
 
 maxratemap = max(ratemap_smooth(:))*1000;   %calcul of maximal rate
@@ -130,14 +129,13 @@ for i = 1:length(binsXaxis)-1
 end
 
 %% spike map (without NaN instead of 0)
-[pos_spike,mat_spikes,mat_spike,ratemap] = spikemap(PosMtx,angleMtx2,binsXaxis,binsYaxis,mat_time);
+[pos_spike,mat_spike,ratemap] = spikemap(PosMtx,angleMtx2,binsXaxis,binsYaxis,mat_time);
 
 %% speed analysis
 [rate,binspeed] = speed(PosMtx,pos_spike,posx,posy);
 
 %% Smooth map
 timemap_smooth = smooth2a(mat_time,2);  %time map smoothing
-spikemap_smooth = smooth2a(mat_spikes,2);   %spike map smoothing
 ratemap_smooth = smooth2a(ratemap,2);   %rate map smoothing
 
 maxratemap = max(ratemap_smooth(:))*1000;   %calcul of maximal rate
