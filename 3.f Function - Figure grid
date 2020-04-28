@@ -96,7 +96,7 @@ idxymidle=idxymidle';
 fieldprox = find(fielddist<fielddismin_mean);
 hold on ;
 % Distance to goal zone
-goalzone = [23 10];
+goalzone = [22 11];
 %scatter(goalzone(1), goalzone(2),'or')
 goaldist = [];
 goaldistround = [];
@@ -107,7 +107,7 @@ for i = 1:length(fieldprox)
         hold on;
 end
 goaldistround = goaldistround';
-goalzoneview = viscircles(goalzone, 3,'color','[0.5 0.5 0.5]');
+goalzoneview = viscircles(goalzone, 4,'color','[0.5 0.5 0.5]');
 
 subplot(2,3,5);  % Subplot of distance and expention correlation
 scatter((goaldistround)*2.5,(fielddist(fieldprox))*2.5,'*b');
