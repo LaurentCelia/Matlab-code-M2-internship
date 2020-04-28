@@ -47,9 +47,6 @@ end
 %% spike map (without NaN instead of 0)
 [pos_spike,mat_spike,ratemap] = spikemap(PosMtx,angleMtx2,binsXaxis,binsYaxis,mat_time);
 
-%% speed analysis
-[rate,binspeed] = speed(PosMtx,pos_spike,posx,posy);
-
 %% Smooth map
 timemap_smooth = smooth2a(mat_time,2);  %time map smoothing
 ratemap_smooth = smooth2a(ratemap,2);   %rate map smoothing
@@ -69,13 +66,13 @@ window = [-1 1];
 
 %% create figure
 if strcmp('grid',celltype)
-    figure_grid(ratomap_smooth,binspeed,rate,fielddist,fielddismin_mean,idxx,idxy,amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,ts1,ts2,window);
+    figure_grid(ratomap_smooth,fielddist,fielddismin_mean,idxx,idxy,amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,ts1,ts2,window);
     
 elseif strcmp('place',celltype)
-    figure_place(PosMtx,pos_spike,ratomap_smooth,binspeed,direction_analysis,smooth_dirrate,smooth_time,rate,amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,ts1,ts2,window);
+    figure_place(PosMtx,pos_spike,ratomap_smooth,direction_analysis,smooth_dirrate,smooth_time,amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,ts1,ts2,window);
   
 elseif strcmp('dir',celltype)
-    figure_dir(PosMtx,pos_spike,direction_analysis,binspeed,angleMtx2,rate,amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,ts1, ts2, window)%     subplot(2,3,1);  %subplot of head direction activity as a function of the angle
+    figure_dir(PosMtx,pos_spike,direction_analysis,angleMtx2,amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,ts1, ts2, window)%     subplot(2,3,1);  %subplot of head direction activity as a function of the angle
 
 end
 
@@ -131,9 +128,6 @@ end
 %% spike map (without NaN instead of 0)
 [pos_spike,mat_spike,ratemap] = spikemap(PosMtx,angleMtx2,binsXaxis,binsYaxis,mat_time);
 
-%% speed analysis
-[rate,binspeed] = speed(PosMtx,pos_spike,posx,posy);
-
 %% Smooth map
 timemap_smooth = smooth2a(mat_time,2);  %time map smoothing
 ratemap_smooth = smooth2a(ratemap,2);   %rate map smoothing
@@ -153,13 +147,13 @@ window = [-1 1];
 
 %% create figure
 if strcmp('grid',celltype)
-    figure_grid(ratomap_smooth,binspeed,rate,fielddist,fielddismin_mean,idxx,idxy,amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,ts1,ts2,window);
+    figure_grid(ratomap_smooth,fielddist,fielddismin_mean,idxx,idxy,amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,ts1,ts2,window);
     
 elseif strcmp('place',celltype)
-    figure_place(PosMtx,pos_spike,ratomap_smooth,binspeed,direction_analysis,smooth_dirrate,smooth_time,rate,amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,ts1,ts2,window);
+    figure_place(PosMtx,pos_spike,ratomap_smooth,direction_analysis,smooth_dirrate,smooth_time,amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,ts1,ts2,window);
   
 elseif strcmp('dir',celltype)
-    figure_dir(PosMtx,pos_spike,direction_analysis,binspeed,angleMtx2,rate,amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,ts1, ts2, window)
+    figure_dir(PosMtx,pos_spike,direction_analysis,angleMtx2,amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,ts1, ts2, window)
 end
 
 %% save figure
