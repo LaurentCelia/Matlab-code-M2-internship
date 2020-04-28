@@ -1,6 +1,6 @@
 %% script for cells activity
 %% open file
-inputfile = 'Zmoth_05032020_S3_afternoon-01.uff'; % define the recording file (.uff).
+inputfile = 'Zmoth_05032020_S1-01.uff'; % define the recording file (.uff).
 
 binsize = 5;
 
