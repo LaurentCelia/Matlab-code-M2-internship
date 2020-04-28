@@ -12,11 +12,11 @@ tt_cell2_without_Eflag = tt_cell2;
 mat_Eflag = [];
 
 for i = 1:length(E_FlagMtx)
-	spikeininterval = find(tt_cell2(:) >= E_FlagMtx(i,1)-2000 & tt_cell2(:) <= E_FlagMtx(i,1)+2000);    % Find spikes 2s before and 2s after goal zone accross
+	spikeininterval = find(tt_cell2(:) >= E_FlagMtx(i,1)-2000 & tt_cell2(:) <= E_FlagMtx(i,1)+2000);    % Find spikes 2s before and 2s after crossing goal zone
     timespikeininterval = tt_cell2(spikeininterval);                                                     
     mat_Eflag(i,1:length(timespikeininterval))=timespikeininterval;    % Matrix with one trial per line
     
-    tt_cell2_without_Eflag(spikeininterval) = NaN;    % Array with all the spikes except those 2s after and before goal zone accross
+    tt_cell2_without_Eflag(spikeininterval) = NaN;    % Array with all the spikes except those 2s after and before crossing goal zone
 end
 
 mat_Eflag(mat_Eflag==0) = NaN;
@@ -28,7 +28,7 @@ Values = arrayfun(@(x,y) tt_cell2_without_Eflag(x,y), Indices, 1:size(tt_cell2_w
 
 mat_Eflag_retr = [];
 for j = 1:length(E_FlagMtx)
-    mat_Eflag_retr(j,1:size(mat_Eflag,2)) = mat_Eflag(j,:)-E_FlagMtx(j);    % Retranche le tps à la traversée (pour que toutes traversée soit à 0s, et tous les spikes sur la même échelle de tps)
+    mat_Eflag_retr(j,1:size(mat_Eflag,2)) = mat_Eflag(j,:)-E_FlagMtx(j);    % Deduct crossing time (every crossing of goal zone will be set at 0 s)
 end
 
 %%
@@ -48,7 +48,7 @@ mat_hist = zeros(size(tt_cell2_without_Eflag,2),4000);
 bin2 = 0:1:Values+4000;
 for p = 1:size(tt_cell2_without_Eflag,1)
     [~,closest2] = min(abs(bin2-tt_cell2_without_Eflag(p,1)));
-    mat_hist(1,closest2) = 1;       % Matrix to calcul the mean and the standard deviation (useful for Zscore)
+    mat_hist(1,closest2) = 1;       % Matrix to compute the mean and the standard deviation (useful for Z-score)
 end
 mat_hist(:,1) = 0;
 mat_hist(mat_rast==0)=NaN;
@@ -58,7 +58,7 @@ mat_rast_with1 = mat_rast;
 for w = 1:size(mat_rast_with1,1)
     for x = 1:size(mat_rast_with1,2)
         if mat_rast(w,x) > 0
-            mat_rast_with1(w,x) = 1;    % Matrix 1 for the histogram figure (number of spikes in each 200ms bin)
+            mat_rast_with1(w,x) = 1;    % Matrix of 1, for the histogram figure
         end
     end 
 end
@@ -69,18 +69,18 @@ binos = 1:200:4001;
 for i = 1:length(binos)-1
     matrastbinn = mat_rast_with1(:,binos(i):binos(i+1)-1);
     somme = nansum(matrastbinn(:));
-    baro(i) = somme;          % Histogram (number of spikes)  
+    baro(i) = somme;          % Histogram (number of spikes every 200ms bin)  
 end
 
 binos2= 1:200:size(mat_hist,2);
 for i = 1:length(binos2)-1
     matrastbinn2 = mat_hist(:,binos2(i):binos2(i+1)-1);
     somme2 = nansum(matrastbinn2(:));
-    baro2(i) = somme2;    % Number of spikes throughout the session
+    baro2(i) = somme2;    % Number of spikes throughout the session every 200ms bin
 end
 
 baro2mean = mean(baro2(:))*size(matrastbinn,1);      % Number of spikes mean
-baro2stddev = std(baro2(:))*sqrt(size(matrastbinn,1)) ;    % Number of spikes standard deviation
+baro2stddev = std(baro2(:))*sqrt(size(matrastbinn,1)) ;    % Standard deviation of number of spikes 
 
 z_score=[];
 for f = 1:length(baro)
@@ -95,7 +95,8 @@ zsco_2sec_post = z_score(1,10:20); zscore_1s_2spre_1s_2spost_mean(1,4) = mean(zs
 %%  create figure raster plot, histogram, colorbar
 
 figure;
-histo = subplot(3,1,2)    % Create figure of the histogram (number of spikes in each bin during 2s before and after goal zone crossing)
+% Create figure of the histogram (number of spikes in each bin during 2s before and after goal zone crossing)
+histo = subplot(3,1,2)   
 bar(1:size(baro,2),baro,'FaceColor',[0.5 0.5 0.5],'EdgeColor',[0.5 0.5 0.5],'BarWidth',1);
 set(gca, 'Color', 'None');
 set(gca,'XColor','none','xtick',[],'xticklabels',[]);
