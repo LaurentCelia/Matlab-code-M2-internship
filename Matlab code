@@ -1,0 +1,143 @@
+inputfile = 'Zmoth_05032020_S1_afternoon-01.uff';              % define the recording file (.uff).
+inputfileev = 'Zmoth_05032020_S1_afternoon_event_flag.uff';    % define the recording file (.uff).
+
+[EEGvalues, EEGts, TTMtx, PosMtx, E_FlagMtx, eeg_chan_to_read,inputfile] = Read_UFF_Slow(inputfile, 1, 1, 0, 0, 0);         % Open the recording file  
+[EEGvalues1, EEGts1, TTMtx1, PosMtx1, E_FlagMtx, eeg_chan_to_read,inputfileev] = Read_UFF_Slow(inputfileev, 0, 0, 0, 1, 0); % Open the recording file  
+
+tetrode = 6; cell = 3;
+
+tt_cell2 = TTMtx(TTMtx(:,2)==tetrode & TTMtx(:,3)==cell,1); % Time of spikes
+
+tt_cell2_without_Eflag = tt_cell2;
+mat_Eflag = [];
+
+for i = 1:length(E_FlagMtx)
+	spikeininterval = find(tt_cell2(:) >= E_FlagMtx(i,1)-2000 & tt_cell2(:) <= E_FlagMtx(i,1)+2000);    % Find spikes 2s before and 2s after goal zone accross
+    timespikeininterval = tt_cell2(spikeininterval);                                                     
+    mat_Eflag(i,1:length(timespikeininterval))=timespikeininterval;    % Matrix with one trial per line
+    
+    tt_cell2_without_Eflag(spikeininterval) = NaN;    % Array with all the spikes except those 2s after and before goal zone accross
+end
+
+mat_Eflag(mat_Eflag==0) = NaN;
+B = ~isnan(tt_cell2_without_Eflag);
+% Indice of the last spike (which is not a NaN)
+Indice = arrayfun(@(x) find(B(:, x), 1, 'last'), 1:size(tt_cell2_without_Eflag, 2));
+% Value of the last spike (which is not a NaN)
+Values = arrayfun(@(x,y) tt_cell2_without_Eflag(x,y), Indices, 1:size(tt_cell2_without_Eflag, 2));
+
+mat_Eflag_retr = [];
+for j = 1:length(E_FlagMtx)
+    mat_Eflag_retr(j,1:size(mat_Eflag,2)) = mat_Eflag(j,:)-E_FlagMtx(j);    % Retranche le tps à la traversée (pour que toutes traversée soit à 0s, et tous les spikes sur la même échelle de tps)
+end
+
+%%
+mat_rast = zeros(size(mat_Eflag_retr,1),4000);
+bin = -2000:1:2000;
+for n = 1:size(mat_Eflag_retr,1)
+    for m = 1:size(mat_Eflag_retr,2)
+        [~,closest] = min(abs(bin-mat_Eflag_retr(n,m)));
+        mat_rast(n,closest) = n;        % Matrix for the raster plot figure
+    end
+end
+mat_rast(:,1) = 0;
+mat_rast(mat_rast==0)=NaN;
+% 
+mat_hist = zeros(size(tt_cell2_without_Eflag,2),4000);
+
+bin2 = 0:1:Values+4000;
+for p = 1:size(tt_cell2_without_Eflag,1)
+    [~,closest2] = min(abs(bin2-tt_cell2_without_Eflag(p,1)));
+    mat_hist(1,closest2) = 1;       % Matrix to calcul the mean and the standard deviation (useful for Zscore)
+end
+mat_hist(:,1) = 0;
+mat_hist(mat_rast==0)=NaN;
+
+mat_rast_with1 = mat_rast;
+
+for w = 1:size(mat_rast_with1,1)
+    for x = 1:size(mat_rast_with1,2)
+        if mat_rast(w,x) > 0
+            mat_rast_with1(w,x) = 1;    % Matrix 1 for the histogram figure (number of spikes in each 200ms bin)
+        end
+    end 
+end
+
+baro = [];
+baro2 = [];
+binos = 1:200:4001;
+for i = 1:length(binos)-1
+    matrastbinn = mat_rast_with1(:,binos(i):binos(i+1)-1);
+    somme = nansum(matrastbinn(:));
+    baro(i) = somme;          % Histogram (number of spikes)  
+end
+
+binos2= 1:200:size(mat_hist,2);
+for i = 1:length(binos2)-1
+    matrastbinn2 = mat_hist(:,binos2(i):binos2(i+1)-1);
+    somme2 = nansum(matrastbinn2(:));
+    baro2(i) = somme2;    % Number of spikes throughout the session
+end
+
+baro2mean = mean(baro2(:))*size(matrastbinn,1);      % Number of spikes mean
+baro2stddev = std(baro2(:))*sqrt(size(matrastbinn,1)) ;    % Number of spikes standard deviation
+
+z_score=[];
+for f = 1:length(baro)
+    z_score(f) = (baro(f)-baro2mean)/baro2stddev;   % Z-score for each bin
+end
+
+zsco_1sec_pre = z_score(1,5:9); zscore_1s_2spre_1s_2spost_mean(1,1) = mean(zsco_1sec_pre); % Z-score 1s before goal zone crossing
+zsco_2sec_pre = z_score(1,1:9); zscore_1s_2spre_1s_2spost_mean(1,2) = mean(zsco_2sec_pre); % Z-score 2s before goal zone crossing
+zsco_1sec_post = z_score(1,10:14); zscore_1s_2spre_1s_2spost_mean(1,3) = mean(zsco_1sec_post);  % Z-score 1s after goal zone crossing
+zsco_2sec_post = z_score(1,10:20); zscore_1s_2spre_1s_2spost_mean(1,4) = mean(zsco_2sec_post);  % Z-score 2s after goal zone crossing
+
+%%  create figure raster plot, histogram, colorbar
+
+figure;
+histo = subplot(3,1,2)    % Create figure of the histogram (number of spikes in each bin during 2s before and after goal zone crossing)
+bar(1:size(baro,2),baro,'FaceColor',[0.5 0.5 0.5],'EdgeColor',[0.5 0.5 0.5],'BarWidth',1);
+set(gca, 'Color', 'None');
+set(gca,'XColor','none','xtick',[],'xticklabels',[]);
+labl = ylabel({'# PA'},'fontsize',12,'Color','k');
+set(labl,'Position',get(labl,'Position')-[3 1 5]);
+box off;
+ylabel([],'Color','k');
+set(gca,'YColor','none','ytick',[],'yticklabels',[]);
+box off; legend off;
+set(gca,'Xlim',[0 20]);
+set(histo, 'Position',[0.35 0.360 0.30 0.2]);
+xline(10);
+
+raster_plot = subplot(3,1,1);
+for ligne = 1:size(mat_Eflag_retr,1)
+    scatter(1:size(mat_rast,2),mat_rast(ligne,:),'k.');     % Create the raster plot
+    hold on;
+end
+set(gca,'xtick',[],'Ylim',[0,length(mat_Eflag_retr)]);
+t = title('Activité des neurones lors de la traversée de la zone de but','fontsize',13);
+set(t,'position',get(t,'position')-[100 -30 0]);
+labl2 = ylabel({'Essais'},'fontsize',12,'Color','k');
+set(labl2,'position',get(labl2,'position')-[650 3 0]);
+set(gca, 'Color', 'None');
+set(gca,'XColor','none');
+set(raster_plot, 'Position',[0.35 0.59 0.30 0.15]);
+xline(2000);
+
+% Create the colobar figure
+colorbar = repmat(baro,1,3);
+colorbar_smooth = [];
+for m = 21:length(colorbar)-20
+    colorbar_smooth(1,(m-20)) = (colorbar(1,m-1)+colorbar(1,m))/2;
+end
+colorbar_smooth(2,:) = NaN(1,20);
+
+c = subplot(3,1,3)
+color = pcolor(colorbar_smooth);
+set(color, 'EdgeColor', 'none');
+colormap(gca,jet);
+set(gca,'XTick',[1 10 20]);
+set(gca,'XTicklabel',[-2 0 2]);
+xlabel({'Périodes ou la zone but est traverseé (s)'},'fontsize',12,'Color','k');
+set(gca,'ytick',[]);
+set(c, 'Position',[0.35 0.30 0.30 0.05]);
