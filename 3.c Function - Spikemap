@@ -1,13 +1,13 @@
 function [pos_spike,mat_spike,ratemap] = spikemap(PosMtx,angleMtx2,binsXaxis,binsYaxis,mat_time)
 
-%% spike map (without NaN instead of 0)
+%% Spike map (without NaN instead of 0)
 pos_spike = find(angleMtx2(:,3)>=1);
 position_x = PosMtx(pos_spike,2);
 position_y = PosMtx(pos_spike,3);
 %position_x2 = PosMtx(pos_spike,4);
 %position_y2 = PosMtx(pos_spike,5);
 
-%create spike matrix : spikes in each position bin
+% Create spike matrix : spikes in each position bin
 mat_spike = zeros(length(binsYaxis),length(binsXaxis));
 
 for i = 1:length(binsXaxis)-1
