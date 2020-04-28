@@ -1,22 +1,22 @@
 function [direction_analysis,smooth_dirrate,smooth_time,angleMtx,angleMtx2,tt_cell2,tt_cell] = headdirection(PosMtx,TTMtx,tetrode,cell)
 
-%% find angle
-% compute angle between two leds in degree at each position timestamp
+%% Find angle
+% Compute angle (in degree) between two LEDs at each position timestamp
 
 angleMtx = [];
 for i = 1:length(PosMtx)
     thetacartesian = mod((180/pi)*(atan2(-PosMtx(i,5)+PosMtx(i,3), PosMtx(i,4)-PosMtx(i,2))),366);
-    Angle = thetacartesian;     % Calculate head angle in degrees
+    Angle = thetacartesian;     % Compute head angle
     angleMtx(i) = Angle;
 end
 angleMtx = angleMtx';
 angleMtx2 = [PosMtx(:,1),angleMtx];   % Associate angle to each position timestamp
 
-%% extract times of spikes and allocate to direction of the animal
+%% Extract times of spikes and allocate to direction of the animal
 tt_cell = find(TTMtx(:,2)==tetrode & TTMtx(:,3)==cell); % Index time of spikes
 tt_cell2 = TTMtx(TTMtx(:,2)==tetrode & TTMtx(:,3)==cell,1); % Time of spikes
 
-%% find number of spikes for each angle and time
+%% Find number of spikes for each angle and time
 angleMtx2(:,3 )= zeros;
 
 for i = 1:length(angleMtx2)-1
@@ -25,8 +25,8 @@ for i = 1:length(angleMtx2)-1
     angleMtx2(i,3) = num_spike;
 end
 
-%% Find for each angle bin time spend, number of spikes and spike rate 
-direction_analysis = (0:6:360)';    % binning direction
+%% Find for each angle bin : time spend, number of spikes and spike rate 
+direction_analysis = (0:6:360)';    % binning angle
 direction_analysis(:,2) = zeros;    
 direction_analysis(:,3) = zeros;
 direction_analysis(:,4) = zeros;
@@ -35,14 +35,14 @@ timePos_sample = diff(PosMtx(:,1));
 timePos_sample = [timePos_sample; 40];
 bin = (0:6:360)';
 
-for i = 1:length(bin)-1     % Calcul time spend in each bin
+for i = 1:length(bin)-1     % Compute time spend in each bin
     index = find(angleMtx2(:,2)>=bin(i,1) & angleMtx2(:,2)<=bin(i+1,1));
     time = sum(timePos_sample(index));
 %     time = (length(index)*40)/1000;
     direction_analysis(i+1,2) = time/1000;
 end
 
-for i = 1:length(bin)-1     % Calcul spike number in each bin
+for i = 1:length(bin)-1     % Compute spike number in each bin
     index = find(angleMtx2(:,2)>bin(i,1) & angleMtx2(:,2)<bin(i+1,1));
     num_spike = sum(angleMtx2(index,3));
     direction_analysis(i+1,3) = num_spike;
@@ -50,8 +50,8 @@ end
 
 direction_analysis(:,4) = direction_analysis(:,3)./direction_analysis(:,2); %spike rate
 
-%% Smooth spike rate and time spent in each bin
-repete_dirrate = repmat(direction_analysis(:,4),3,1);   %repete spike rate 3 times
+%% Smooth spike rate and time spend in each bin
+repete_dirrate = repmat(direction_analysis(:,4),3,1);   % Repete spike rate 3 times
 smooth_dirrate = [];
 
 for i = 62:(62+60)      % Smooth spike rate
