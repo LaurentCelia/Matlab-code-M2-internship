@@ -1,14 +1,14 @@
 function figure_place(PosMtx,pos_spike,ratomap_smooth,direction_analysis,smooth_dirrate,smooth_time,amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,ts1,ts2,window)
 
 figure;
-%% Subplot of Path X Spike
+%% Subplot of Path X Spikes
 subplot(2,2,1); 
 plot(PosMtx(:,2),PosMtx(:,3),'Color',[0.5 0.5 0.5]);
 hold on;
 scatter(PosMtx(pos_spike,2),PosMtx(pos_spike,3),5,'Markeredgecolor','r','markerfacecolor','r');
 title('Path X Spike','fontsize',15);
 xlim([50 190]); ylim([25 190]);
-goalzone_path = viscircles([154.5 74], 18.25,'color','[0.5 0.5 0.5]','LineStyle','--','LineWidth',1);   %create the goal zone
+goalzone_path = viscircles([154.5 74], 18.25,'color','[0.5 0.5 0.5]','LineStyle','--','LineWidth',1);   % Create the goal zone
 axis square;
 axis off;
 
@@ -21,7 +21,7 @@ set(figure_ratemap, 'EdgeColor', 'none');
 title({'Rate map'},'fontsize',15)
 colorrate = colorbar('FontSize',12);
 colorrate.Label.String = 'Rate (Hz)';
-goalzone_ratemap = viscircles([22 11], 4,'color','[0.5 0.5 0.5]','LineStyle','--','LineWidth',1); %create the goal zone
+goalzone_ratemap = viscircles([22 11], 4,'color','[0.5 0.5 0.5]','LineStyle','--','LineWidth',1); % Create the goal zone
 
 %% Wave Form
 if amplitude1 == value
@@ -66,6 +66,7 @@ elseif amplitude4 == value
     box off; set(gca,'XTick',[]); set(gca,'YTick',[]);set(gca, 'Color', 'None');axis square;
 end
 
+% Subplot of the autocorrelogram
 subplot(2,2,3)
 offsets  = crosscorrelogram(ts1, ts2, window);
 [counts,centers] =hist(offsets, 100); 
