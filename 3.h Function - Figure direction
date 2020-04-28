@@ -1,7 +1,7 @@
 function figure_dir(PosMtx,pos_spike,direction_analysis,angleMtx2,amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,ts1, ts2, window)
 
 figure;
-%% Subplot of Path X Spike
+%% Subplot of Path X Spikes
 subplot(2,3,1); 
 plot(PosMtx(:,2),PosMtx(:,3),'Color',[0.5 0.5 0.5]);
 hold on;
