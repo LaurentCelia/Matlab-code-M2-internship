@@ -35,7 +35,7 @@ mat_time = zeros(length(binsYaxis),length(binsXaxis));
 for i = 1:length(binsXaxis)-1       
    for ii = 1:length(binsYaxis)-1
        a = find(PosMtx(:,2)>binsXaxis(i) & PosMtx(:,2)<binsXaxis(i+1) & PosMtx(:,3)>binsYaxis(ii) & PosMtx(:,3)<binsYaxis(ii+1));
-       time = length(a)*40;
+       time = length(a)*40;      % Positions are sampled every 40 ms
        if time == 0
            mat_time(ii,i)=NaN;
        else
