@@ -1,6 +1,6 @@
 function [fielddist,idxy, idxx,ratomap_smooth,fielddismin_mean] = field(ratemap_smooth)
 
-%% define the fields (for grid cells analysis : this function find distance beteween each field)  - It also find the rate spike matrix that will be used for the rate map figure
+%% Define the fields (for grid cells analysis : this function find distance beteween each field)  - It also find the rate spike matrix that will be used for the rate map figure
 visitedmap_smooth = NaN(size(ratemap_smooth)+2);
 visitedmap_smooth(2:size(ratemap_smooth,1)+1,2:size(ratemap_smooth,2)+1)=ratemap_smooth;
 visitedmap_smooth(visitedmap_smooth>0)=0;
@@ -12,7 +12,7 @@ ratomap_smooth = zeros(size(ratemap_smooth)+2);
 ratomap_smooth(2:size(ratemap_smooth,1)+1,2:size(ratemap_smooth,2)+1)=ratemap_smooth;  % Re-create a ratemap_smooth matrix without NaN
 
 regmax = imregionalmax(ratomap_smooth);   
-[idxy, idxx] = find(regmax);    % Find the highest pixels to determine where are the fields of the grid cell
+[idxy, idxx] = find(regmax);    % Find the highest pixels to determine where are the grid cell fields 
 idxy = rmmissing(idxy); idxx = rmmissing(idxx);
 
 for i = 1:length(idxx)
@@ -27,11 +27,11 @@ for i = 1:length(idxx)
         ratomap_smooth(idxy(i)-1,idxx(i)+1);...
         ratomap_smooth(idxy(i)-1,idxx(i))];
     
-    if ratomap_smooth(idxy(i),idxx(i)) < max(ratomap_smooth(:))*(2/3)    % The maximum pixels must be greater than two thirds of the maximum frequency to be concidered as a field
+    if ratomap_smooth(idxy(i),idxx(i)) < max(ratomap_smooth(:))*(2/3)    % The maximum pixels must be greater than two thirds of the maximum frequency to be considered as a field
         idxx(i) = NaN; idxy(i) = NaN; 
     end
     
-    test = sum(contiguousratemax > (mean(contiguousratemax))/3);     % All the pixels around the maximum pixel detected must be greater than a third of their average rate to be concidered as a field
+    test = sum(contiguousratemax > (mean(contiguousratemax))/3);     % All the pixels around the maximum pixel detected must be greater than a third of their average rate to be considered as a field
     if test < 9
         idxx(i) = NaN; idxy(i) = NaN;
     end
@@ -43,7 +43,7 @@ fielddistmin = [];
 
 for i = 1:length(idxx)
     for ii = 1:length(idxx)
-        fielddist(i,ii) = (sqrt((idxx(ii)-idxx(i))^2+(idxy(ii)-idxy(i))^2));    %find the distance between the fields
+        fielddist(i,ii) = (sqrt((idxx(ii)-idxx(i))^2+(idxy(ii)-idxy(i))^2));    % Find the distance between fields
     end
 end
 
@@ -54,7 +54,7 @@ end
 
 fielddistmin = fielddistmin';
 fielddistmin(isnan(fielddistmin)) = [];
-fielddismin_mean = mean(fielddistmin)+5;    % Distance between 2 field must be inferior to this value (see in 'figure_grid')
+fielddismin_mean = mean(fielddistmin)+5;    % Distance between 2 fields must be inferior to this value (see in 'figure_grid')
 
 for ixy = 1:length(colNaN) 
     ratomap_smooth(rowNaN(ixy),colNaN(ixy))=NaN;  % Matrix for rate map
