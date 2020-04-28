@@ -47,6 +47,9 @@ end
 %% spike map (without NaN instead of 0)
 [pos_spike,mat_spikes,mat_spike,ratemap] = spikemap(PosMtx,angleMtx2,binsXaxis,binsYaxis,mat_time);
 
+%% speed analysis
+[rate,binspeed] = speed(PosMtx,pos_spike,posx,posy);
+
 %% Smooth map
 timemap_smooth = smooth2a(mat_time,2);  %time map smoothing
 spikemap_smooth = smooth2a(mat_spikes,2);   %spike map smoothing
@@ -66,7 +69,6 @@ ts2 = tt_cell2/1000;
 window = [-1 1];
 
 %% create figure
-
 if strcmp('grid',celltype)
     figure_grid(ratomap_smooth,binspeed,rate,fielddist,fielddismin_mean,idxx,idxy,amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,ts1,ts2,window);
     
@@ -106,7 +108,6 @@ elseif tetrode == 0 && cell == 0
   [direction_analysis,smooth_dirrate,smooth_time,angleMtx,angleMtx2,tt_cell2,tt_cell] = headdirection(PosMtx,TTMtx,tetrode,cell);
 
 %% time map
-
 posx = PosMtx(:,2);
 posy = PosMtx(:,3);
 
@@ -130,6 +131,9 @@ end
 
 %% spike map (without NaN instead of 0)
 [pos_spike,mat_spikes,mat_spike,ratemap] = spikemap(PosMtx,angleMtx2,binsXaxis,binsYaxis,mat_time);
+
+%% speed analysis
+[rate,binspeed] = speed(PosMtx,pos_spike,posx,posy);
 
 %% Smooth map
 timemap_smooth = smooth2a(mat_time,2);  %time map smoothing
