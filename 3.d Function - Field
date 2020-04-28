@@ -54,7 +54,7 @@ end
 
 fielddistmin = fielddistmin';
 fielddistmin(isnan(fielddistmin)) = [];
-fielddismin_mean = mean(fielddistmin)+5;    % Distance between 2 field must be superior to this value (see in 'figure_grid')
+fielddismin_mean = mean(fielddistmin)+5;    % Distance between 2 field must be inferior to this value (see in 'figure_grid')
 
 for ixy = 1:length(colNaN) 
     ratomap_smooth(rowNaN(ixy),colNaN(ixy))=NaN;  % Matrix for rate map
