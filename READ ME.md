@@ -1,5 +1,4 @@
-# hello-word
-Raster plot figure - Time analysis
+# Raster plot figure - Time analysis
 
 Hello, I'm a 2nd year Master's student in Neuroscience.  
 
