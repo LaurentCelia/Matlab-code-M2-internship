@@ -57,7 +57,7 @@ maxratemap = max(ratemap_smooth(:))*1000;   %calcul of maximal rate
 [fielddist,idxy, idxx,ratomap_smooth,fielddismin_mean] = field(ratemap_smooth);
 
 %% Wave form
-[amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,elec1,elec2,elec3,elec4] = waveforme(TTMtx,tt_cell);
+[amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,elec1,elec2,elec3,elec4] = waveform(TTMtx,tt_cell);
 
 %% Autocorrelogram
 ts1 = tt_cell2/1000;
