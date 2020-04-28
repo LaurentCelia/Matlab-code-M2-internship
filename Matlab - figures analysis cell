@@ -147,8 +147,8 @@ maxratemap = max(ratemap_smooth(:))*1000;   %calcul of maximal rate
 [amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,elec1,elec2,elec3,elec4] = waveforme(TTMtx,tt_cell);
 
 %% Autocorrelogram
-ts1 = tt_cell2/1000; % changé par PY
-ts2 = tt_cell2/1000; % changé par PY
+ts1 = tt_cell2/1000; 
+ts2 = tt_cell2/1000; 
 window = [-1 1];
 
 %% create figure
