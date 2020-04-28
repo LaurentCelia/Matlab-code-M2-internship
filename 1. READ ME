@@ -1,8 +1,17 @@
-# Raster plot figure - Time analysis
+Hello! I'm a 2nd year Master's student in Neuroscience.  
 
-Hello, I'm a 2nd year Master's student in Neuroscience.  
-
-I share here my Matlab code that I have done during my internship in the 'Laboratoire de Neurosciences Cognitives' in Marseille in the 'Espace' team.
+I share here my Matlab code that I have done during my internship (of course with the help of my supervisor) in 
+the 'Laboratoire de Neurosciences Cognitives' in Marseille in the 'Espace' team.
 I studied place cell activity in rats while they were performing a goal directed task.
 
-The following is a code for time analysis of the activity of places cells when the animals across the goal zone.
+The following are codes that I used for analyse my data. 
+
+The first one (file n°2) is a time analysis of the activity of place cells when the animal across the goal zone.
+To run this code it is essential to have the recordings files : "Zmoth_05032020_S1-01.uff" and "Zmoth_05032020_S1_even_flag-01.uff".
+
+The second one (file n°3) is an analysis of cells depending of their type (place cell, grid cell or head direction cell).
+It necessits several functions to run it : file 3.a, 3.b etc... are the needed functions.
+This code gives figure to visualise the spatial characteristic of the cell (rate map, trajectory of the animal, wave form, auto-correlogram, grid spacing etc...).
+To run this code you can use tetrode 7 and cell 2.
+
+Enjoy !
