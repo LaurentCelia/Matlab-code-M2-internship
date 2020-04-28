@@ -1,7 +1,7 @@
 function [amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,elec1,elec2,elec3,elec4] = waveform(TTMtx,tt_cell)
 
 %% Wave form
-%separate each electrode of the tetrode
+% Extract each electrode of the tetrode
 elec1 = TTMtx(tt_cell,4:4:131);
 moyelec1 = mean(elec1);    % Mean wave form of the first electrode 
 amplitude1 = max(moyelec1) - min(moyelec1); % Amplitude of the first electrode
