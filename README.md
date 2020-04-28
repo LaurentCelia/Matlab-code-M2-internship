@@ -1,2 +1,2 @@
 # hello-word
-Raster plot figure - time analysis
+Raster plot figure - Time analysis
