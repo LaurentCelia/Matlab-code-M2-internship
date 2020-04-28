@@ -1,0 +1,83 @@
+function figure_dir(PosMtx,pos_spike,direction_analysis,angleMtx2,amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,ts1, ts2, window)
+
+figure;
+%% Subplot of Path X Spike
+subplot(2,3,1); 
+plot(PosMtx(:,2),PosMtx(:,3),'Color',[0.5 0.5 0.5]);
+hold on;
+scatter(PosMtx(pos_spike,2),PosMtx(pos_spike,3),5,'Markeredgecolor','r','markerfacecolor','r');
+title('Path X Spike','fontsize',15);
+axis square; axis off;
+
+%% Subplot of spikes as a function of angles and time
+subplot(2,3,2);
+plot((angleMtx2(:,1))/1000,angleMtx2(:,2))
+yticks([0 180 360]);               
+hold on;
+scatter((angleMtx2(pos_spike))/1000, angleMtx2(pos_spike,2),'r','filled')
+ylim([0 360]);
+title('Angle X Time','fontsize',15);
+ylabel({'Angles'},'fontsize',15,'Color','k');
+xlabel({'Time (s)'},'fontsize',15,'Color','k');
+axis square; box off; set(gca, 'Color', 'None');
+subplot(2,3,3)  % Histogram of the spikes as a function of the angles
+bar (direction_analysis(:,1),direction_analysis(:,3))
+set(gca,'xlim',[0 360])
+axis square; axis off; box off; set(gca,'XTick',[]); set(gca,'YTick',[]); set(gca, 'Color', 'None');
+camroll(-90);
+
+%% Subplot of the wave form
+if amplitude1 == value
+    subplot(2,3,4)
+    waveform1 = plot(moyelec1,'color','r','LineWidth',3);
+    hold on
+    std1_sup = plot(moyelec1 - std1,'color','black');
+    hold on
+    std1_inf = plot(moyelec1 + std1,'color','black');
+    title('Electrode 1','fontsize',15);
+    ylim([stdmin stdmax]);
+    box off; set(gca,'XTick',[]); set(gca,'YTick',[]); set(gca, 'Color', 'None'); axis square;
+elseif amplitude2 == value
+    subplot(2,3,4)
+    waveform2 = plot(moyelec2,'color','r','LineWidth',3);
+    hold on
+    std2_sup = plot(moyelec2 - std2,'color','black''LineWidth',2);
+    hold on
+    std2_inf = plot(moyelec2 + std2,'color','black''LineWidth',2);
+    title('Electrode 2','fontsize',15);
+    ylim([stdmin stdmax]);
+    box off; set(gca,'XTick',[]); set(gca,'YTick',[]);set(gca, 'Color', 'None'); axis square;
+elseif amplitude3 == value
+    subplot(2,3,4)
+    waveform3 = plot(moyelec3,'color','r','LineWidth',2);
+    hold on
+    std3_sup = plot(moyelec3 - std3,'color','black','LineWidth',1);
+    hold on
+    std3_inf = plot(moyelec3 + std3,'color','black','LineWidth',1);
+    title('Electrode 3','fontsize',15);
+    ylim([stdmin stdmax]);
+    box off; set(gca,'XTick',[]); set(gca,'YTick',[]);set(gca, 'Color', 'None');axis square;
+elseif amplitude4 == value
+    subplot(2,3,4)
+    waveform4 = plot(moyelec4,'color','r');
+    hold on
+    std4_sup = plot(moyelec4 - std4,'color','black');
+    hold on
+    std4_inf = plot(moyelec4 + std4,'color','black');
+    title('Electrode 4','fontsize',15);
+    ylim([stdmin stdmax]);
+    box off; set(gca,'XTick',[]); set(gca,'YTick',[]);set(gca, 'Color', 'None');axis square;
+end
+
+%% Subplot of the autocorrelogram
+subplot(2,3,6)
+offsets  = crosscorrelogram(ts1, ts2, window);
+[counts,centers] =hist(offsets, 100); % changé par PY
+counts(50)=0; % changé par PY
+bar(centers,counts); % changé par PY
+title('Autocorrelogram','fontsize',15)
+ylabel({'Spikes'},'fontsize',15,'Color','k');
+xlabel({'Time (s)'},'fontsize',15,'Color','k');
+axis square; xlim([-1 1]); set(gca, 'Color', 'None'); box off;
+
+end
