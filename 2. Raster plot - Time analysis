@@ -10,11 +10,17 @@
 	- PosMtx: a matrix of timesteps (in sec, column 1) and x (column 2) and y (column 3) corresponding positions
 	- E_FlagMtx: a matrix of event flags corresponding to each timestep
 
-To test the code you can use the PosMtx, TTMtx and E_flagMtx that I put at the end of all my codes.
+To test the code you can use the PosMtx, TTMtx and E_FlagMtx that I put at the end of all my codes.
+
 %%
 
+load('PosMtx.mat');
+load('TTMtx.mat');
+load('E_FlagMtx);
 
 tetrode = 7; cell = 2;
+
+%%
 
 tt_cell2 = TTMtx(TTMtx(:,2)==tetrode & TTMtx(:,3)==cell,1); % Time of spikes
 
