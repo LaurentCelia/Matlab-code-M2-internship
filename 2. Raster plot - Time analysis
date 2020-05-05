@@ -1,28 +1,22 @@
 %% 	To run this script you will need:
 
-	- TTMtx :  a matrix with the time of each spike and its waveform.
-		First column: time of the spikes (in ms); column 2: probe; column 3: channel
-		From column 4 to column 131: waveform amplitude (32 col for each channel) organized as follolws:
+	- tt_cell2:  a matrix with the time of each spike and its waveform.
+		First column: time of the spikes (in ms); column 2: probe ; column 3: channel
+		From column 4 to column 131: waveform amplitude (32 column for each channel) organized as follolws:
 		the first 4 (from colum 4 to column 7) contains values of the first timepoint for all channels 
-		(column 4 -> channel 1, column 5 -> channel 2, column 6 -> channel 3, column 7 -> channe l4),
+		(column 4 -> channel 1, column 5 -> channel 2, column 6 -> channel 3, column 7 -> channel 4),
 		the second 4 (from column 8 to column 11) contains values of the second timepoint for all channels 
 		(column 5 -> channel 1, column 6 -> channel 2, col7 -> channel 3, column 8 -> channel 4), and so on...              
 	- PosMtx: a matrix of timesteps (in sec, column 1) and x (column 2) and y (column 3) corresponding positions
 	- E_FlagMtx: a matrix of event flags corresponding to each timestep
 
-To test the code you can use the PosMtx, TTMtx and E_FlagMtx that I put at the end of all my codes.
+To test the code you can use the file 'Zmoth_05032020_S1_tet7_cell2.mat' (at the end of all my codes) which contains these 3 variables.
 
 %%
 
-load('PosMtx.mat');
-load('TTMtx.mat');
-load('E_FlagMtx);
-
-tetrode = 7; cell = 2;
+load('Zmoth_05032020_S1_tet7_cell2.mat');
 
 %%
-
-tt_cell2 = TTMtx(TTMtx(:,2)==tetrode & TTMtx(:,3)==cell,1); % Time of spikes
 
 tt_cell2_without_Eflag = tt_cell2;
 mat_Eflag = [];
