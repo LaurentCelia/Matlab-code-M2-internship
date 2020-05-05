@@ -5,12 +5,12 @@ I studied place cell activity in rats while they were performing a goal directed
 The following are codes that I used to analyse my data. 
 
 The first one (file n°2) is a time analysis of the place cells activity when the animal cross the goal zone.
-To run this code you can use the variables I get from my recordings : 'TTMtx.mat', 'PosMtx.mat', and 'E_FlagMtx'.
-They are available at the end of all my codes. 
+To run this code you can use the file : 'Zmoth_05032020_S1_tet7_cell2.mat'.
+It is available at the end of all my codes. 
 
 The second one (file n°3) is an analysis of different type of cells (place cell, grid cell or head direction cell).
 It requires several functions to run it : file 3.a, 3.b, 3.c, 3.d, 3.e, 3.f, 3.g, 3.h.
 This code permits to visualise the spatial characteristics of the cell (rate map, trajectory of the animal, wave form,
 auto-correlogram, grid spacing etc...).
-To run this code you can use the variables I used from my recordings : 'TTMtx.mat' and 'PosMtx.mat'.
- you can use tetrode 7 and cell 2.
+To run this code you can use the file : 'Zmoth_05032020_S1_tet7_cell2.mat'.
+
