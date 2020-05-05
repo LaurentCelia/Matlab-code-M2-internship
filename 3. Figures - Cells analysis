@@ -12,12 +12,17 @@
 	- PosMtx: a matrix of timesteps (in sec, column 1) and x (column 2) and y (column 3) corresponding positions
 
 To test the code you can use the PosMtx, TTMtx that I put at the end of all my codes.
-%%
 
+%%
+load('PosMtx.mat')
+load('TTMtx.mat')
+load('E_flagMtx')
+
+%%
 binsize = 5;
 
 PosMtx = PosMtx(1:2:end,:);
-%% select tetrode and cell number & cell type
+%% select tetrode and cell number & cell type (you can enter tetrode 7 and cell 2)
 prompt = {'What is your tetrode number ?','What is your cell number ?','What is your little cell type : grid, dir or place ?'};
 dlgtitle = 'Setting';
 definput = {'2','2','place'};
