@@ -1,4 +1,4 @@
-function [direction_analysis,smooth_dirrate,smooth_time,angleMtx,angleMtx2,tt_cell2,tt_cell] = headdirection(PosMtx,TTMtx,tetrode,cell)
+function [direction_analysis,smooth_dirrate,smooth_time,angleMtx,angleMtx2] = headdirection(PosMtx)
 
 %% Find angle
 % Compute angle (in degree) between two LEDs at each position timestamp
@@ -11,10 +11,6 @@ for i = 1:length(PosMtx)
 end
 angleMtx = angleMtx';
 angleMtx2 = [PosMtx(:,1),angleMtx];   % Associate angle to each position timestamp
-
-%% Extract times of spikes and allocate to direction of the animal
-tt_cell = find(TTMtx(:,2)==tetrode & TTMtx(:,3)==cell); % Index time of spikes
-tt_cell2 = TTMtx(TTMtx(:,2)==tetrode & TTMtx(:,3)==cell,1); % Time of spikes
 
 %% Find number of spikes for each angle and time
 angleMtx2(:,3 )= zeros;
@@ -48,7 +44,7 @@ for i = 1:length(bin)-1     % Compute spike number in each bin
     direction_analysis(i+1,3) = num_spike;
 end
 
-direction_analysis(:,4) = direction_analysis(:,3)./direction_analysis(:,2); %spike rate
+direction_analysis(:,4) = direction_analysis(:,3)./direction_analysis(:,2);     %spike rate
 
 %% Smooth spike rate and time spend in each bin
 repete_dirrate = repmat(direction_analysis(:,4),3,1);   % Repete spike rate 3 times
