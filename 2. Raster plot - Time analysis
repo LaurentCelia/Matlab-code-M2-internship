@@ -110,34 +110,30 @@ zsco_2sec_post = z_score(1,10:20); zscore_1s_2spre_1s_2spost_mean(1,4) = mean(zs
 %%  create figure raster plot, histogram, colorbar
 
 figure;
-% Create figure of the histogram (number of spikes in each bin during 2s before and after goal zone crossing)
-histo = subplot(3,1,2)   
-bar(1:size(baro,2),baro,'FaceColor',[0.5 0.5 0.5],'EdgeColor',[0.5 0.5 0.5],'BarWidth',1);
+histo = subplot(3,1,2)
+bar(1:size(baro,2),baro,'FaceColor','k','EdgeColor',[0.5 0.5 0.5],'BarWidth',1);
 set(gca, 'Color', 'None');
-labl = ylabel({'# Potentiel d'action'},'fontsize',12,'Color','k');
+labl = ylabel({"# Potentiels d'action"},'fontsize',12,'Color','k');
 set(labl,'Position',get(labl,'Position')-[3 1 5]);
-box off;
-ylabel([],'Color','k');
-set(gca,'XTick',[1 10 20]);
+box off; legend off;
+set(gca,'Xlim',[0.5 20.5]);
+set(histo, 'Position',[0.35 0.360 0.30 0.2]);
+xline(10.5);
+set(gca,'XTick',[0.5 10.5 20.5]);
 set(gca,'XTicklabel',[-2 0 2]);
 xlabel({'Périodes ou la zone but est traverseé (s)'},'fontsize',12,'Color','k');
-set(gca,'YColor','none','ytick',[],'yticklabels',[]);
-box off; legend off;
-set(gca,'Xlim',[0 20]);
-set(histo, 'Position',[0.35 0.360 0.30 0.2]);
-xline(10);
+hold on
 
 raster_plot = subplot(3,1,1);
 for ligne = 1:size(mat_Eflag_retr,1)
-    scatter(1:size(mat_rast,2),mat_rast(ligne,:),'k.');     % Create the raster plot
+    scatter(1:size(mat_rast,2),mat_rast(ligne,:),'k.');
     hold on;
 end
-set(gca,'xtick',[],'Ylim',[0,length(mat_Eflag_retr)]);
+set(gca,'Ylim',[0,length(mat_Eflag_retr)]);
 t = title('Activité du neurone lors de la traversée de la zone de but','fontsize',13);
 set(t,'position',get(t,'position')-[100 -30 0]);
 labl2 = ylabel({'Essais'},'fontsize',12,'Color','k');
 set(labl2,'position',get(labl2,'position')-[650 3 0]);
-set(gca, 'Color', 'None');
-set(gca,'XColor','none');
+set(gca, 'Color', 'None'); set(gca,'XColor','none');
 set(raster_plot, 'Position',[0.35 0.59 0.30 0.15]);
-xline(2000);
+xline(2000,'Color','k');
