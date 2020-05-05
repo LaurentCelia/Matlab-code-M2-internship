@@ -1,23 +1,23 @@
-function [amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,elec1,elec2,elec3,elec4] = waveform(TTMtx,tt_cell)
+function [amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,elec1,elec2,elec3,elec4] = waveform(tt_cell2)
 
 %% Wave form
 % Extract each electrode of the tetrode
-elec1 = TTMtx(tt_cell,4:4:131);
+elec1 = tt_cell2(:,4:4:131);
 moyelec1 = mean(elec1);    % Mean wave form of the first electrode 
 amplitude1 = max(moyelec1) - min(moyelec1); % Amplitude of the first electrode
 std1 = std(elec1);  % Standard deviation of the first electrode
 
-elec2 = TTMtx(tt_cell,5:4:131);
+elec2 = tt_cell2(:,5:4:131);
 moyelec2 = mean(elec2);
 amplitude2 = max(moyelec2) - min(moyelec2);
 std2 = std(elec2);
 
-elec3 = TTMtx(tt_cell,6:4:131);
+elec3 = tt_cell2(:,6:4:131);
 moyelec3 = mean(elec3);
 amplitude3 = max(moyelec3) - min(moyelec3);
 std3 = std(elec3);
 
-elec4 = TTMtx(tt_cell,7:4:131);
+elec4 = tt_cell2(:,7:4:131);
 moyelec4 = mean(elec4);
 amplitude4 = max(moyelec4) - min(moyelec4);
 std4 = std(elec4);
