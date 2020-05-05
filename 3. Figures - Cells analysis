@@ -1,8 +1,18 @@
 %% Script for cells activity
-%% Open file
-inputfile = 'Zmoth_05032020_S1-01.uff'; % define the recording file (.uff).
 
-[EEGvalues, EEGts, TTMtx, PosMtx, E_FlagMtx, eeg_chan_to_read,inputfile] = Read_UFF_Slow(inputfile, 1, 1, 0, 0, 0); % Open the recording file
+%% 	To run this script you will need:
+
+	- TTMtx :  a matrix with the time of each spike and its waveform.
+		First column: time of the spikes (in ms); column 2: probe; column 3: channel
+		From column 4 to column 131: waveform amplitude (32 col for each channel) organized as follolws:
+		the first 4 (from colum 4 to column 7) contains values of the first timepoint for all channels 
+		(column 4 -> channel 1, column 5 -> channel 2, column 6 -> channel 3, column 7 -> channe l4),
+		the second 4 (from column 8 to column 11) contains values of the second timepoint for all channels 
+		(column 5 -> channel 1, column 6 -> channel 2, col7 -> channel 3, column 8 -> channel 4), and so on...              
+	- PosMtx: a matrix of timesteps (in sec, column 1) and x (column 2) and y (column 3) corresponding positions
+
+To test the code you can use the PosMtx, TTMtx that I put at the end of all my codes.
+%%
 
 binsize = 5;
 
