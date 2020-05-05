@@ -2,45 +2,39 @@
 
 %% 	To run this script you will need:
 
-	- TTMtx :  a matrix with the time of each spike and its waveform.
-		First column: time of the spikes (in ms); column 2: probe; column 3: channel
-		From column 4 to column 131: waveform amplitude (32 col for each channel) organized as follolws:
+	- tt_cell2:  a matrix with the time of each spike and its waveform.
+		First column: time of the spikes (in ms); column 2: probe ; column 3: channel
+		From column 4 to column 131: waveform amplitude (32 column for each channel) organized as follolws:
 		the first 4 (from colum 4 to column 7) contains values of the first timepoint for all channels 
-		(column 4 -> channel 1, column 5 -> channel 2, column 6 -> channel 3, column 7 -> channe l4),
+		(column 4 -> channel 1, column 5 -> channel 2, column 6 -> channel 3, column 7 -> channel 4),
 		the second 4 (from column 8 to column 11) contains values of the second timepoint for all channels 
 		(column 5 -> channel 1, column 6 -> channel 2, col7 -> channel 3, column 8 -> channel 4), and so on...              
 	- PosMtx: a matrix of timesteps (in sec, column 1) and x (column 2) and y (column 3) corresponding positions
+	- E_FlagMtx: a matrix of event flags corresponding to each timestep
 
-To test the code you can use the PosMtx, TTMtx that I put at the end of all my codes.
-
-%%
-load('PosMtx.mat')
-load('TTMtx.mat')
-load('E_flagMtx')
+To test the code you can use the file 'Zmoth_05032020_S1_tet7_cell2.mat' (at the end of all my codes) which contains these 3 variables.
 
 %%
-binsize = 5;
 
-PosMtx = PosMtx(1:2:end,:);
-%% select tetrode and cell number & cell type (you can enter tetrode 7 and cell 2)
-prompt = {'What is your tetrode number ?','What is your cell number ?','What is your little cell type : grid, dir or place ?'};
+load('Zmoth_05032020_S1_tet7_cell2')
+
+%  Define your cell type
+prompt = {'What is your little cell type : grid, dir or place ?'};
 dlgtitle = 'Setting';
-definput = {'2','2','place'};
+definput = {'place'};
 opts.Interpreter = 'tex';
 cellnb = inputdlg(prompt,dlgtitle,[1 40],definput,opts);
-tetrode = str2num(cellnb{1});
-cell = str2num(cellnb{2});
-celltype = cellnb{3};
-
-%%
-if cell > 0
+celltype = cellnb{1};
 
 %% find angle
-[direction_analysis,smooth_dirrate,smooth_time,angleMtx,angleMtx2,tt_cell2,tt_cell] = headdirection(PosMtx,TTMtx,tetrode,cell);
+[direction_analysis,smooth_dirrate,smooth_time,angleMtx,angleMtx2] = headdirection(PosMtx,tt_cell2);
+
 %% time map
 posx = PosMtx(:,2);
 posy = PosMtx(:,3);
 
+%%
+binsize = 5;
 binsXaxis = min(posx):binsize:max(posx);  %divise x position in steps of binsize
 binsYaxis = min(posy):binsize:max(posy);  %divise y position in steps of binsize
 
@@ -72,11 +66,11 @@ maxratemap = max(ratemap_smooth(:))*1000;   % Computation of maximal rate
 [fielddist,idxy, idxx,ratomap_smooth,fielddismin_mean] = field(ratemap_smooth);
 
 %% Wave form
-[amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,elec1,elec2,elec3,elec4] = waveform(TTMtx,tt_cell);
+[amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,elec1,elec2,elec3,elec4] = waveform(tt_cell2);
 
 %% Autocorrelogram
-ts1 = tt_cell2/1000;
-ts2 = tt_cell2/1000;
+ts1 = tt_cell2(:,1)/1000;
+ts2 = tt_cell2(:,1)/1000;
 window = [-1 1];
 
 %% Create figure
@@ -100,87 +94,3 @@ set(gcf,'Position',[0 0 1 1]);
 set(gcf,'PaperOrientation','landscape');
 print(nametosave,'-dpng','-r0')
 close()
-
-elseif tetrode == 0 && cell == 0
-  alltetrodes = unique(TTMtx(:,2));
- 
-  for iii = 1:length(alltetrodes)
-      tetrodesarray = find(TTMtx(:,2)==alltetrodes(iii)); % Index time of spikes
-      allcells = unique(TTMtx(tetrodesarray,3));
-      allcells(1) = [];
-      tetrode = alltetrodes(iii);
-
-      if ~isempty(allcells)
-      for iiii = 1:length(allcells)
-      cell = allcells(iiii);
-      
-      
-  [direction_analysis,smooth_dirrate,smooth_time,angleMtx,angleMtx2,tt_cell2,tt_cell] = headdirection(PosMtx,TTMtx,tetrode,cell);
-
-%% time map
-posx = PosMtx(:,2);
-posy = PosMtx(:,3);
-
-binsXaxis = min(posx):binsize:max(posx);  %divise x position in steps of 5
-binsYaxis = min(posy):binsize:max(posy);  %divise y position in steps of 5
-
-%create time matrix : time spend in each position bin
-mat_time = zeros(length(binsYaxis),length(binsXaxis));
-
-for i = 1:length(binsXaxis)-1       
-   for ii = 1:length(binsYaxis)-1
-       a = find(PosMtx(:,2)>binsXaxis(i) & PosMtx(:,2)<binsXaxis(i+1) & PosMtx(:,3)>binsYaxis(ii) & PosMtx(:,3)<binsYaxis(ii+1));
-       time = length(a)*40;
-       if time == 0
-           mat_time(ii,i)=NaN;
-       else
-       mat_time(ii,i) = time;
-       end
-   end
-end
-
-%% spike map (without NaN instead of 0)
-[pos_spike,mat_spike,ratemap] = spikemap(PosMtx,angleMtx2,binsXaxis,binsYaxis,mat_time);
-
-%% Smooth map
-timemap_smooth = smooth2a(mat_time,2);  %time map smoothing
-ratemap_smooth = smooth2a(ratemap,2);   %rate map smoothing
-
-maxratemap = max(ratemap_smooth(:))*1000;   %calcul of maximal rate
-
-%% Define the field
-[fielddist,idxy, idxx,ratomap_smooth,fielddismin_mean] = field(ratemap_smooth);
-
-%% Wave form
-[amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,elec1,elec2,elec3,elec4] = waveforme(TTMtx,tt_cell);
-
-%% Autocorrelogram
-ts1 = tt_cell2/1000; 
-ts2 = tt_cell2/1000; 
-window = [-1 1];
-
-%% create figure
-if strcmp('grid',celltype)
-    figure_grid(ratomap_smooth,fielddist,fielddismin_mean,idxx,idxy,amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,ts1,ts2,window);
-    
-elseif strcmp('place',celltype)
-    figure_place(PosMtx,pos_spike,ratomap_smooth,direction_analysis,smooth_dirrate,smooth_time,amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,ts1,ts2,window);
-  
-elseif strcmp('dir',celltype)
-    figure_dir(PosMtx,pos_spike,direction_analysis,angleMtx2,amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,ts1, ts2, window)
-end
-
-%% Save figure
-% Enlarge figure to full screen.
-name = inputfile(1:end-4);
-nametosave = strcat('path_to_save_figure\',name,'_tet',num2str(tetrode),'cell',num2str(cell));
-
-set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]);
-set(gcf,'Position',[0 0 1 1]);
-set(gcf,'PaperOrientation','landscape');
-print(nametosave,'-dpng','-r0')
-close()
-      end
-      end
-  end
-end
