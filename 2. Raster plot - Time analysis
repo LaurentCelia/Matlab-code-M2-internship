@@ -1,8 +1,18 @@
-inputfile = 'Zmoth_05032020_S1-01.uff';              % Define the recording file (.uff).
-inputfileev = 'Zmoth_05032020_S1_event_flag.uff';    % Define the recording file (.uff).
+%% 	To run this script you will need:
 
-[EEGvalues, EEGts, TTMtx, PosMtx, E_FlagMtx, eeg_chan_to_read,inputfile] = Read_UFF_Slow(inputfile, 1, 1, 0, 0, 0);         % Open the recording file  
-[EEGvalues1, EEGts1, TTMtx1, PosMtx1, E_FlagMtx, eeg_chan_to_read,inputfileev] = Read_UFF_Slow(inputfileev, 0, 0, 0, 1, 0); % Open the recording file  
+	- TTMtx :  a matrix with the time of each spike and its waveform.
+		First column: time of the spikes (in ms); column 2: probe; column 3: channel
+		From column 4 to column 131: waveform amplitude (32 col for each channel) organized as follolws:
+		the first 4 (from colum 4 to column 7) contains values of the first timepoint for all channels 
+		(column 4 -> channel 1, column 5 -> channel 2, column 6 -> channel 3, column 7 -> channe l4),
+		the second 4 (from column 8 to column 11) contains values of the second timepoint for all channels 
+		(column 5 -> channel 1, column 6 -> channel 2, col7 -> channel 3, column 8 -> channel 4), and so on...              
+	- PosMtx: a matrix of timesteps (in sec, column 1) and x (column 2) and y (column 3) corresponding positions
+	- E_FlagMtx: a matrix of event flags corresponding to each timestep
+
+To test the code you can use the PosMtx, TTMtx and E_flagMtx that I put at the end of all my codes.
+%%
+
 
 tetrode = 7; cell = 2;
 
@@ -12,10 +22,9 @@ tt_cell2_without_Eflag = tt_cell2;
 mat_Eflag = [];
 
 for i = 1:length(E_FlagMtx)
-	spikeininterval = find(tt_cell2(:) >= E_FlagMtx(i,1)-2000 & tt_cell2(:) <= E_FlagMtx(i,1)+2000);    % Find spikes 2s before and 2s after crossing goal zone
+    spikeininterval = find(tt_cell2(:) >= E_FlagMtx(i,1)-2000 & tt_cell2(:) <= E_FlagMtx(i,1)+2000);    % Find spikes 2s before and 2s after crossing goal zone
     timespikeininterval = tt_cell2(spikeininterval);                                                     
     mat_Eflag(i,1:length(timespikeininterval))=timespikeininterval;    % Matrix with one trial per line
-    
     tt_cell2_without_Eflag(spikeininterval) = NaN;    % Array with all the spikes except those 2s after and before crossing goal zone
 end
 
@@ -99,11 +108,13 @@ figure;
 histo = subplot(3,1,2)   
 bar(1:size(baro,2),baro,'FaceColor',[0.5 0.5 0.5],'EdgeColor',[0.5 0.5 0.5],'BarWidth',1);
 set(gca, 'Color', 'None');
-set(gca,'XColor','none','xtick',[],'xticklabels',[]);
-labl = ylabel({'# PA'},'fontsize',12,'Color','k');
+labl = ylabel({'# Potentiel d'action'},'fontsize',12,'Color','k');
 set(labl,'Position',get(labl,'Position')-[3 1 5]);
 box off;
 ylabel([],'Color','k');
+set(gca,'XTick',[1 10 20]);
+set(gca,'XTicklabel',[-2 0 2]);
+xlabel({'Périodes ou la zone but est traverseé (s)'},'fontsize',12,'Color','k');
 set(gca,'YColor','none','ytick',[],'yticklabels',[]);
 box off; legend off;
 set(gca,'Xlim',[0 20]);
@@ -116,7 +127,7 @@ for ligne = 1:size(mat_Eflag_retr,1)
     hold on;
 end
 set(gca,'xtick',[],'Ylim',[0,length(mat_Eflag_retr)]);
-t = title('Activité des neurones lors de la traversée de la zone de but','fontsize',13);
+t = title('Activité du neurone lors de la traversée de la zone de but','fontsize',13);
 set(t,'position',get(t,'position')-[100 -30 0]);
 labl2 = ylabel({'Essais'},'fontsize',12,'Color','k');
 set(labl2,'position',get(labl2,'position')-[650 3 0]);
@@ -124,21 +135,3 @@ set(gca, 'Color', 'None');
 set(gca,'XColor','none');
 set(raster_plot, 'Position',[0.35 0.59 0.30 0.15]);
 xline(2000);
-
-% Create the colobar figure
-colorbar = repmat(baro,1,3);
-colorbar_smooth = [];
-for m = 21:length(colorbar)-20
-    colorbar_smooth(1,(m-20)) = (colorbar(1,m-1)+colorbar(1,m))/2;
-end
-colorbar_smooth(2,:) = NaN(1,20);
-
-c = subplot(3,1,3)
-color = pcolor(colorbar_smooth);
-set(color, 'EdgeColor', 'none');
-colormap(gca,jet);
-set(gca,'XTick',[1 10 20]);
-set(gca,'XTicklabel',[-2 0 2]);
-xlabel({'Périodes ou la zone but est traverseé (s)'},'fontsize',12,'Color','k');
-set(gca,'ytick',[]);
-set(c, 'Position',[0.35 0.30 0.30 0.05]);
