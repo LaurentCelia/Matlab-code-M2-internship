@@ -1,4 +1,4 @@
-function [direction_analysis,smooth_dirrate,smooth_time,angleMtx,angleMtx2] = headdirection(PosMtx)
+function [direction_analysis,smooth_dirrate,smooth_time,angleMtx,angleMtx2] = headdirection(PosMtx,tt_cell2)
 
 %% Find angle
 % Compute angle (in degree) between two LEDs at each position timestamp
