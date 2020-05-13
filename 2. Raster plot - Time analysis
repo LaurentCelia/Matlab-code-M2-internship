@@ -1,5 +1,6 @@
 %% 	To run this script you will need:
-
+%{
+	- (Matlab)
 	- tt_cell2:  a matrix with the time of each spike and its waveform.
 		First column: time of the spikes (in ms); column 2: probe ; column 3: channel
 		From column 4 to column 131: waveform amplitude (32 column for each channel) organized as follolws:
@@ -11,38 +12,30 @@
 	- E_FlagMtx: a matrix of event flags corresponding to each timestep
 
 To test the code you can use the file 'Zmoth_05032020_S1_tet7_cell2.mat' (at the end of all my codes) which contains these 3 variables.
-
+%}
 %%
 
 load('Zmoth_05032020_S1_tet7_cell2.mat');
 
 %%
 
-tt_cell2_without_Eflag = tt_cell2;
 mat_Eflag = [];
 
 for i = 1:length(E_FlagMtx)
-    spikeininterval = find(tt_cell2(:) >= E_FlagMtx(i,1)-2000 & tt_cell2(:) <= E_FlagMtx(i,1)+2000);    % Find spikes 2s before and 2s after crossing goal zone
+    spikeininterval = find(tt_cell2(:,1) >= E_FlagMtx(i,1)-1000 & tt_cell2(:,1) <= E_FlagMtx(i,1)+1000);    % Find spikes 1s before and 1s after crossing goal zone
     timespikeininterval = tt_cell2(spikeininterval);                                                     
     mat_Eflag(i,1:length(timespikeininterval))=timespikeininterval;    % Matrix with one trial per line
-    tt_cell2_without_Eflag(spikeininterval) = NaN;    % Array with all the spikes except those 2s after and before crossing goal zone
 end
-
 mat_Eflag(mat_Eflag==0) = NaN;
-B = ~isnan(tt_cell2_without_Eflag);
-% Indice of the last spike (which is not a NaN)
-Indice = arrayfun(@(x) find(B(:, x), 1, 'last'), 1:size(tt_cell2_without_Eflag, 2));
-% Value of the last spike (which is not a NaN)
-Values = arrayfun(@(x,y) tt_cell2_without_Eflag(x,y), Indices, 1:size(tt_cell2_without_Eflag, 2));
 
 mat_Eflag_retr = [];
 for j = 1:length(E_FlagMtx)
     mat_Eflag_retr(j,1:size(mat_Eflag,2)) = mat_Eflag(j,:)-E_FlagMtx(j);    % Deduct crossing time (every crossing of goal zone will be set at 0 s)
 end
 
-%%
-mat_rast = zeros(size(mat_Eflag_retr,1),4000);
-bin = -2000:1:2000;
+%% Create the matrix that will be use to create the raster plot
+mat_rast = zeros(size(mat_Eflag_retr,1),2000);
+bin = -1000:1:1000;
 for n = 1:size(mat_Eflag_retr,1)
     for m = 1:size(mat_Eflag_retr,2)
         [~,closest] = min(abs(bin-mat_Eflag_retr(n,m)));
@@ -51,83 +44,56 @@ for n = 1:size(mat_Eflag_retr,1)
 end
 mat_rast(:,1) = 0;
 mat_rast(mat_rast==0)=NaN;
-% 
-mat_hist = zeros(size(tt_cell2_without_Eflag,2),4000);
 
-bin2 = 0:1:Values+4000;
-for p = 1:size(tt_cell2_without_Eflag,1)
-    [~,closest2] = min(abs(bin2-tt_cell2_without_Eflag(p,1)));
-    mat_hist(1,closest2) = 1;       % Matrix to compute the mean and the standard deviation (useful for Z-score)
-end
-mat_hist(:,1) = 0;
-mat_hist(mat_rast==0)=NaN;
-
+%% Create the array that will be use to create the histogram
 mat_rast_with1 = mat_rast;
 
 for w = 1:size(mat_rast_with1,1)
     for x = 1:size(mat_rast_with1,2)
         if mat_rast(w,x) > 0
-            mat_rast_with1(w,x) = 1;    % Matrix of 1, for the histogram figure
+            mat_rast_with1(w,x) = 1;    % Matrix of 1 for each spike
         end
     end 
 end
 
+
+lenght_session = PosMtx(end,1)/1000;	% Length of the session
+nb_tot_spikes = length(tt_cell2);	% Total number of spikes during the session
+average_rate = nb_tot_spikes/lenght_session;	% Average spike rate during the session
 baro = [];
-baro2 = [];
-binos = 1:200:4001;
+baronorm = [];
+binos = 1:200:2001;
 for i = 1:length(binos)-1
-    matrastbinn = mat_rast_with1(:,binos(i):binos(i+1)-1);
-    somme = nansum(matrastbinn(:));
-    baro(i) = somme;          % Histogram (number of spikes every 200ms bin)  
+    matrastbinn = mat_rast_with1(:,binos(i):binos(i+1)-1);	% Find the spikes in each 200 ms bin
+    somme_PA = nansum(matrastbinn(:));  % Compute the number of spikes in each 200 ms bin
+    freq = (somme_PA*5)/length(E_FlagMtx);  % Compute the spike rate in each 200 ms bin
+    baro(i) = freq;    % Array that will be use to create the histogram figure
+    baro_norm(i) = freq/average_rate;   % Spike rate in each bin is normalized by the grand average rate of the cell
 end
 
-binos2= 1:200:size(mat_hist,2);
-for i = 1:length(binos2)-1
-    matrastbinn2 = mat_hist(:,binos2(i):binos2(i+1)-1);
-    somme2 = nansum(matrastbinn2(:));
-    baro2(i) = somme2;    % Number of spikes throughout the session every 200ms bin
-end
-
-baro2mean = mean(baro2(:))*size(matrastbinn,1);      % Number of spikes mean
-baro2stddev = std(baro2(:))*sqrt(size(matrastbinn,1)) ;    % Standard deviation of number of spikes 
-
-z_score=[];
-for f = 1:length(baro)
-    z_score(f) = (baro(f)-baro2mean)/baro2stddev;   % Z-score for each bin
-end
-
-zsco_1sec_pre = z_score(1,5:9); zscore_1s_2spre_1s_2spost_mean(1,1) = mean(zsco_1sec_pre); % Z-score 1s before goal zone crossing
-zsco_2sec_pre = z_score(1,1:9); zscore_1s_2spre_1s_2spost_mean(1,2) = mean(zsco_2sec_pre); % Z-score 2s before goal zone crossing
-zsco_1sec_post = z_score(1,10:14); zscore_1s_2spre_1s_2spost_mean(1,3) = mean(zsco_1sec_post);  % Z-score 1s after goal zone crossing
-zsco_2sec_post = z_score(1,10:20); zscore_1s_2spre_1s_2spost_mean(1,4) = mean(zsco_2sec_post);  % Z-score 2s after goal zone crossing
-
-%%  create figure raster plot, histogram, colorbar
+%%  create raster plot and the histogram figure
 
 figure;
 histo = subplot(3,1,2)
 bar(1:size(baro,2),baro,'FaceColor','k','EdgeColor',[0.5 0.5 0.5],'BarWidth',1);
 set(gca, 'Color', 'None');
-labl = ylabel({"# Potentiels d'action"},'fontsize',12,'Color','k');
-set(labl,'Position',get(labl,'Position')-[3 1 5]);
+ylabel({"Fréquence d'activité (Hz)"},'fontsize',12,'Color','k');
 box off; legend off;
-set(gca,'Xlim',[0.5 20.5]);
+set(gca,'Xlim',[0.5 10.5]);
 set(histo, 'Position',[0.35 0.360 0.30 0.2]);
-xline(10.5);
-set(gca,'XTick',[0.5 10.5 20.5]);
-set(gca,'XTicklabel',[-2 0 2]);
-xlabel({'Périodes ou la zone but est traverseé (s)'},'fontsize',12,'Color','k');
-hold on
+xline(5.5,'Color','r');
+set(gca,'XTick',[0.5 5.5 10.5]);
+set(gca,'XTicklabel',[-1 0 1]);
+xlabel({'Périodes où la zone but est traverseé (s)'},'fontsize',12,'Color','k');
 
 raster_plot = subplot(3,1,1);
 for ligne = 1:size(mat_Eflag_retr,1)
     scatter(1:size(mat_rast,2),mat_rast(ligne,:),'k.');
-    hold on;
+    hold on
 end
 set(gca,'Ylim',[0,length(mat_Eflag_retr)]);
 t = title('Activité du neurone lors de la traversée de la zone de but','fontsize',13);
-set(t,'position',get(t,'position')-[100 -30 0]);
-labl2 = ylabel({'Essais'},'fontsize',12,'Color','k');
-set(labl2,'position',get(labl2,'position')-[650 3 0]);
+ylabel({'Essais'},'fontsize',12,'Color','k');
 set(gca, 'Color', 'None'); set(gca,'XColor','none');
 set(raster_plot, 'Position',[0.35 0.59 0.30 0.15]);
-xline(2000,'Color','k');
+xline(1000,'Color','r');
