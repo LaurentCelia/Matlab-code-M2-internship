@@ -4,13 +4,12 @@ figure;
 
 % Subplot of rate map with distance between each field (with straight line connecting each field)
 subplot(2,2,1)  
+ratomap_smooth(ratomap_smooth==0) = NaN;
 figure_ratemap = pcolor(ratomap_smooth);
 colormap(gca,jet);
 axis square; axis off;
 set(figure_ratemap, 'EdgeColor', 'none');
 title({'Rate map'},'fontsize',15)
-colorrate = colorbar('FontSize',12);
-colorrate.Label.String = 'Rate (Hz)';
 hold on;
 for i=1:length(idxx)
     for ii = 1:length(idxx)
@@ -44,17 +43,15 @@ idxymidle=idxymidle';
 fieldprox = find(fielddist<fielddismin_mean);
 hold on ;
 % Distance to goal zone
-goalzone = [30 15];
+goalzone = [17 9];
 goaldist = [];
 goaldistround = [];
 for i = 1:length(fieldprox)
         goaldist(i) = abs(sqrt((goalzone(1)-idxxmidle(fieldprox(i)))^2 + (goalzone(2)-idxymidle(fieldprox(i)))^2));    % Find the distance between the fields and the goal zone
         goaldistround = (round(goaldist));
-        text(idxxmidle(fieldprox(i)),idxymidle(fieldprox(i)),['',num2str(round((goaldistround(i))*3.8)),''],'color','k','fontsize',12,'FontWeight','bold');
-        hold on;
 end
 goaldistround = goaldistround';
-goalzoneview = viscircles(goalzone, 4,'color','[0.5 0.5 0.5]');
+goalzoneview = viscircles(goalzone, 2.5,'color','[0.5 0.5 0.5]','LineStyle','--','LineWidth',1);
 
 
 % Subplot of the wave form of the electrode with the highest amplitude
@@ -110,7 +107,7 @@ text(15,80,sprintf('Correlation coefficient : %f', coeffcor(2)));
 else 
 text(15,80,'Correlation coefficient :NaN');
 end 
-xlim([0 100]); ylim([0 100]); 
+xlim([0 max(goaldistround)*2.5]); ylim([min(fielddist(fieldprox))*2.5 max(fielddist(fieldprox))*2.5]); 
 ylabel({'Field distance'},'fontsize',15,'Color','k');
 xlabel({'Distance field/goal zone'},'fontsize',15,'Color','k');
 title('Field distance X Distance to goal zone','fontsize',15);
