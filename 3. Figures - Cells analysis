@@ -19,7 +19,7 @@ To test the code you can use the file 'Zmoth_05032020_S1_tet7_cell2.mat' (at the
 load('Zmoth_05032020_S1_tet7_cell2')
 
 %  Define your cell type
-prompt = {'What is your little cell type : grid, dir or place ?'};
+prompt = {'What is your little cell type : grid or place ?'};
 dlgtitle = 'Setting';
 definput = {'place'};
 opts.Interpreter = 'tex';
@@ -79,10 +79,8 @@ if strcmp('grid',celltype)
     
 elseif strcmp('place',celltype)
     figure_place(PosMtx,pos_spike,ratomap_smooth,direction_analysis,smooth_dirrate,smooth_time,amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,ts1,ts2,window);
-  
-elseif strcmp('dir',celltype)
-    figure_dir(PosMtx,pos_spike,direction_analysis,angleMtx2,amplitude1,amplitude2,amplitude3,amplitude4,value,moyelec1,moyelec2,moyelec3,moyelec4,std1,std2,std3,std4,stdmin,stdmax,ts1, ts2, window)%     subplot(2,3,1);  %subplot of head direction activity as a function of the angle
-end
+ 
+ end
 
 %% Save figure
 % Enlarge figure to full screen
